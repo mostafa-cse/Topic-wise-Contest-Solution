@@ -5,27 +5,41 @@ void solve() {
     int n, m;
     cin >> n >> m;
 
-    vector<int> adj[n + 1], in(n + 1, 0);
+    vector<int> t[n + 1];
     for (int i = 0; i < m; i++) {
         int u, v;
         cin >> u >> v;
 
-        adj[u].push_back(v);
-        in[v]++;
+        t[u].push_back(v);
     }
 
-    int ans = 0;
-    vector<int> order, vis(n + 1, 0);
+    vector<int> vis(n + 1, 0);
+    stack<int> nodes;
     function<void(int, bool)> dfs = [&](int u, bool ok) -> void {
         vis[u] = 1;
-        for (int v : adj[u]) {
+        for (int v : t[u]) {
             if (!vis[v]) {
-                dfs(v, false);
+                dfs(v, ok);
             }
         }
-        if (ok) order.push_back(u);
+        if (ok) nodes.push(u);
     };
-    
+    for (int i = 1; i <= n; i++) {
+        if (!vis[i]) {
+            dfs(i, true);
+        }
+    }
+
+    fill(vis.begin(), vis.end(), 0);
+    int ans = 0;
+    while (!nodes.empty()) {
+        if (!vis[nodes.top()]) {
+            ans++;
+            dfs(nodes.top(), 0);
+        }
+        nodes.pop();
+    }
+    cout << ans << endl;
 }
 signed main() {
     int tc;
